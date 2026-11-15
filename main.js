@@ -234,7 +234,13 @@
   const MSK = 3 * 3600e3;
   const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
   const weekdays = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+  let serverDate = ""; // дата ближайшей пятницы от сервера, она главная
   function nextMeeting(now = Date.now()) {
+    if (serverDate) {
+      const [y, mo, d] = serverDate.split("-").map(Number);
+      const start = Date.UTC(y, mo - 1, d, 16) - MSK;
+      if (now < start + 3 * 3600e3) return start;
+    }
     if (CONFIG.firstMeeting) {
       const [y, mo, d] = CONFIG.firstMeeting.split("-").map(Number);
       const start = Date.UTC(y, mo - 1, d, 16) - MSK;
@@ -290,9 +296,16 @@
     });
   })();
   let seatsKnown = null;
+  const dm = (d) => { const [, m, dd] = String(d).split("-").map(Number); return m && dd ? dd + "\u00a0" + months[m - 1] : ""; };
+  let regOpen = true;
   function renderSeats(raw, pop) {
-    const s = { total: Number(raw.total) || CONFIG.freeSeats, taken: Number(raw.taken) || 0, left: Number(raw.left) || 0 };
+    const s = {
+      total: Number(raw.total) || CONFIG.freeSeats, taken: Number(raw.taken) || 0, left: Number(raw.left) || 0,
+      date: /^\d{4}-\d{2}-\d{2}$/.test(raw.date) ? raw.date : "", open: raw.open !== false,
+      reopens: /^\d{4}-\d{2}-\d{2}$/.test(raw.reopens) ? raw.reopens : "",
+    };
     seatsKnown = s;
+    if (s.date && s.date !== serverDate) { serverDate = s.date; tickCountdown(); }
     chairsSvg.classList.remove("is-loading");
     chairEls.forEach((c, i) => {
       const was = c.classList.contains("is-taken");
@@ -301,13 +314,32 @@
       dishEls[i].classList.toggle("is-taken", now);
       if (pop && now && !was && motion) { c.classList.remove("is-pop"); void c.getBBox(); c.classList.add("is-pop"); }
     });
+    const on = s.date ? "на\u00a0" + dm(s.date) : "";
     $("#seats-num").textContent = String(s.left);
-    $("#seats-of").innerHTML = s.left > 0 ? `${plural(s.left, "место", "места", "мест")}<br>свободно из\u00a0${s.total}` : "мест<br>свободно";
-    seatsText.innerHTML = s.left > 0
-      ? "Первая встреча бесплатна для первых десяти по\u00a0анкете. Занятые стулья закрашены."
-      : "Бесплатные места разобраны. Анкета открыта: напишу, когда освободится стул.";
-    $("#seats").setAttribute("aria-label", s.left > 0 ? `Свободно ${s.left} из ${s.total} бесплатных мест` : "Бесплатные места разобраны");
+    $("#seats-of").innerHTML = (s.left > 0 ? plural(s.left, "место", "места", "мест") : "мест") + " свободно<br>" + on;
+    if (s.open) {
+      seatsText.innerHTML = "Место за&nbsp;столом подтверждаю лично после анкеты. Занятые стулья закрашены.";
+    } else {
+      const was = s.left === 0 ? "Стол на&nbsp;эту пятницу собран." : "Стол на&nbsp;прошлую пятницу был полный.";
+      seatsText.innerHTML = was + " Запись на&nbsp;следующую откроется в&nbsp;воскресенье, " + dm(s.reopens) + ".";
+    }
+    $("#seats").setAttribute("aria-label", "Стол на десять: свободно " + s.left + " из " + s.total);
+    setRegistration(s.open, s.reopens);
   }
+
+  // кнопки записи: когда стол полный, на них написано, когда откроется запись
+  const formBtns = $$("[data-open-form]");
+  formBtns.forEach((b) => { b.dataset.label = b.textContent; });
+  function setRegistration(open, reopens) {
+    regOpen = open;
+    root.toggleAttribute("data-closed", !open);
+    formBtns.forEach((b) => {
+      const small = b.classList.contains("btn-sm");
+      b.textContent = open ? b.dataset.label : small ? "С\u00a0" + dm(reopens) : "Запись откроется в\u00a0воскресенье, " + dm(reopens);
+      b.disabled = !open;
+    });
+  }
+
   async function loadSeats() {
     chairsSvg.classList.add("is-loading");
     try {
@@ -318,13 +350,16 @@
       if (!res.ok) throw new Error(res.status);
       renderSeats(await res.json(), true);
     } catch {
-      // нет связи с сервером: показываем правило без цифр
+      // нет связи с сервером: показываем правило без цифр, запись не закрываем
       chairsSvg.classList.remove("is-loading");
-      seatsText.innerHTML = "Первая встреча бесплатна для первых десяти по&nbsp;анкете.";
-      $("#seats-of").innerHTML = "бесплатных<br>мест";
+      seatsText.innerHTML = "Место за&nbsp;столом подтверждаю лично после анкеты.";
+      $("#seats-num").textContent = String(CONFIG.freeSeats);
+      $("#seats-of").innerHTML = "мест<br>за&nbsp;столом";
     }
   }
-  loadSeats();
+  const seatsReady = loadSeats();
+  // место могут подтвердить, пока страница открыта
+  setInterval(() => { if (!document.hidden) loadSeats(); }, 60000);
 
   /* ---------- анкета: лист снизу по шагам ---------- */
   const sheet = $("#sheet"), scrim = $("#scrim"), form = $("#form");
@@ -443,7 +478,7 @@
   }
 
   function openSheet() {
-    if (isOpen) return;
+    if (isOpen || !regOpen) return;
     isOpen = true;
     lastFocus = document.activeElement;
     scrim.hidden = false; sheet.hidden = false;
@@ -533,6 +568,11 @@
       });
       clearTimeout(t);
       const data = await res.json().catch(() => ({}));
+      if (res.status === 409 && data.error === "closed") {
+        if (data.seats) renderSeats(data.seats, true);
+        closeSheet();
+        return;
+      }
       if (res.status === 422) {
         const map = { name: [1, "name"], telegram: [1, "telegram"], what: [1, "what"], stage: [2, "stage"], goals: [2, "goals"] };
         const hit = map[data.error];
@@ -541,9 +581,8 @@
       if (!res.ok || !data.ok) throw new Error(data.error || res.status);
       store.del(DRAFT);
       const tg = body.telegram;
-      $("#done-text").innerHTML = data.free === false
-        ? `Бесплатные места на&nbsp;первую встречу уже разобраны, но&nbsp;анкета у&nbsp;меня. Напишу на&nbsp;<b>${escapeHtml(tg)}</b>, когда освободится стул.`
-        : `Место за&nbsp;столом за&nbsp;тобой. Напишу на&nbsp;<b>${escapeHtml(tg)}</b> в&nbsp;течение дня и&nbsp;добавлю в&nbsp;чат участников.`;
+      const day = data.seats && data.seats.date ? dm(data.seats.date) : "";
+      $("#done-text").innerHTML = "Анкета у&nbsp;меня. Напишу на&nbsp;<b>" + escapeHtml(tg) + "</b> в&nbsp;течение дня, подтвержу место за&nbsp;столом" + (day ? " на&nbsp;пятницу, " + day : "") + " и&nbsp;добавлю в&nbsp;чат участников.";
       show("done");
       if (data.seats) renderSeats(data.seats, true);
     } catch {
@@ -734,5 +773,5 @@
   }
 
   // открыть анкету по ссылке …#anketa
-  if (location.hash === "#anketa") openSheet();
+  if (location.hash === "#anketa") seatsReady.then(openSheet);
 })();

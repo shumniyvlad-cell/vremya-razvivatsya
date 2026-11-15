@@ -43,6 +43,11 @@ db.exec(`
   );
 `);
 
+// место за столом теперь отмечает Влад в админке: дата пятницы, на которую человек сидит
+if (!db.prepare("PRAGMA table_info(leads)").all().some((c) => c.name === "seat_date")) {
+  db.exec("ALTER TABLE leads ADD COLUMN seat_date TEXT NOT NULL DEFAULT ''");
+}
+
 const upsert = db.prepare(`
   INSERT INTO leads (created_at, updated_at, name, telegram, tg_key, what, stage, goals, topic, phone, deleted)
   VALUES (@now, @now, @name, @telegram, @tg_key, @what, @stage, @goals, @topic, @phone, 0)
@@ -52,8 +57,8 @@ const upsert = db.prepare(`
 `);
 const listLeads = db.prepare("SELECT * FROM leads WHERE deleted = 0 ORDER BY created_at DESC");
 const countAll = db.prepare("SELECT COUNT(*) AS n FROM leads");
-// отказ освобождает бесплатное место, удалённые анкеты тоже
-const countSeats = db.prepare("SELECT COUNT(*) AS n FROM leads WHERE deleted = 0 AND status <> 'Отказ'");
+const countSeated = db.prepare("SELECT COUNT(*) AS n FROM leads WHERE deleted = 0 AND seat_date = ?");
+const setSeat = db.prepare("UPDATE leads SET seat_date = ?, updated_at = ? WHERE id = ? AND deleted = 0");
 const softDelete = db.prepare("UPDATE leads SET deleted = 1 WHERE id = ?");
 const setStatus = db.prepare("UPDATE leads SET status = ?, updated_at = ? WHERE id = ?");
 
@@ -134,9 +139,31 @@ function parseLead(body) {
   };
 }
 
-function seats() {
-  const taken = countSeats.get().n;
-  return { total: FREE_SEATS, taken: Math.min(taken, FREE_SEATS), left: Math.max(0, FREE_SEATS - taken) };
+/* ---------- пятницы: стол на FREE_SEATS человек, запись закрывается при полном столе, открывается в воскресенье ---------- */
+const MSK = 3 * 3600e3;
+const ymd = (ms) => new Date(ms).toISOString().slice(0, 10);
+const dayMs = (date) => Date.parse(date + "T00:00:00Z") - MSK; // полночь по Москве
+// ближайшая пятница, встреча которой ещё не закончилась (до 19:00)
+function upcomingFriday(now = Date.now()) {
+  const m = new Date(now + MSK);
+  let add = (5 - m.getUTCDay() + 7) % 7;
+  if (add === 0 && m.getUTCHours() >= 19) add = 7;
+  return ymd(Date.UTC(m.getUTCFullYear(), m.getUTCMonth(), m.getUTCDate() + add));
+}
+const shift = (date, days) => ymd(Date.parse(date + "T00:00:00Z") + days * 864e5);
+
+function seats(now = Date.now()) {
+  const date = upcomingFriday(now);
+  const taken = countSeated.get(date).n;
+  let open = true, reopens = "";
+  if (taken >= FREE_SEATS) { open = false; reopens = shift(date, 2); }
+  else {
+    // пятница прошла с полным столом: до воскресенья запись закрыта
+    const prev = shift(date, -7);
+    const sunday = shift(prev, 2);
+    if (now < dayMs(sunday) && countSeated.get(prev).n >= FREE_SEATS) { open = false; reopens = sunday; }
+  }
+  return { total: FREE_SEATS, taken: Math.min(taken, FREE_SEATS), left: Math.max(0, FREE_SEATS - taken), date, open, reopens };
 }
 
 function corsHeaders(req) {
@@ -181,8 +208,8 @@ function csv(leads) {
   // свободный текст анкеты Excel может принять за формулу, ник и телефон уже проверены на входе
   const text = (v) => (/^[=+\-@\t]/.test(String(v ?? "")) ? "'" + v : v);
   const when = new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", dateStyle: "short", timeStyle: "short" });
-  const head = ["Подана (МСК)", "Имя", "Telegram", "Чем занимается", "Стадия", "Зачем идёт", "Тема для разбора", "Телефон", "Статус"];
-  const rows = leads.map((l) => [when.format(new Date(l.created_at)), text(l.name), l.telegram, text(l.what), l.stage, l.goals, text(l.topic), l.phone, l.status]);
+  const head = ["Подана (МСК)", "Имя", "Telegram", "Чем занимается", "Стадия", "Зачем идёт", "Тема для разбора", "Телефон", "Статус", "За столом на"];
+  const rows = leads.map((l) => [when.format(new Date(l.created_at)), text(l.name), l.telegram, text(l.what), l.stage, l.goals, text(l.topic), l.phone, l.status, l.seat_date]);
   return "﻿" + [head, ...rows].map((r) => r.map(cell).join(";")).join("\r\n") + "\r\n";
 }
 
@@ -213,10 +240,10 @@ const server = http.createServer(async (req, res) => {
       const { lead, error } = parseLead(body);
       if (error) return send(res, 422, { error }, cors);
       if (countAll.get().n >= MAX_LEADS) return send(res, 503, { error: "full" }, cors);
-      const before = seats();
+      const st = seats();
+      if (!st.open) return send(res, 409, { error: "closed", seats: st }, cors);
       upsert.run({ ...lead, now: new Date().toISOString() });
-      // free: попал ли человек в бесплатные места (повторная анкета с тем же ником место не занимает)
-      return send(res, 200, { ok: true, free: before.left > 0, seats: seats() }, cors);
+      return send(res, 200, { ok: true, seats: st }, cors);
     }
 
     if (path === "/admin" || path.startsWith("/admin/")) {
@@ -241,11 +268,19 @@ const server = http.createServer(async (req, res) => {
         });
       }
       // заголовок нельзя выставить формой с чужого сайта, это защита от подделки запроса
-      if ((path === "/admin/delete" || path === "/admin/status") && req.method === "POST") {
+      if ((path === "/admin/delete" || path === "/admin/status" || path === "/admin/seat") && req.method === "POST") {
         if (req.headers["x-admin"] !== "1") return send(res, 403, { error: "forbidden" });
         const body = await readJson(req);
         const id = Number(body.id) || 0;
         if (path === "/admin/delete") softDelete.run(id);
+        else if (path === "/admin/seat") {
+          const st = seats();
+          if (body.on === true) {
+            if (st.taken >= FREE_SEATS) return send(res, 409, { error: "full", seats: st });
+            setSeat.run(st.date, new Date().toISOString(), id);
+          } else setSeat.run("", new Date().toISOString(), id);
+          return send(res, 200, { ok: true, seats: seats() });
+        }
         else {
           if (!STATUSES.includes(body.status)) return send(res, 422, { error: "status" });
           setStatus.run(body.status, new Date().toISOString(), id);

@@ -534,3 +534,10 @@ p { text-wrap: pretty; }
   .rec { top: auto; bottom: calc(14px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 700px) { .t1 { font-size: 28.5vw; } }
+
+/* запись закрыта: стол на пятницу собран, кнопки говорят, когда откроется */
+:root[data-closed] [data-open-form][disabled] {
+  background: transparent; color: var(--fg); border: 1.5px dashed currentColor; opacity: 1; cursor: default;
+  white-space: normal; text-align: center; line-height: 1.2; height: auto; padding-top: 12px; padding-bottom: 12px;
+}
+.night [data-open-form][disabled] { color: var(--cream); }
