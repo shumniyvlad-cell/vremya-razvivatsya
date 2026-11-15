@@ -1,0 +1,17 @@
+[Unit]
+Description=Vremya razvivatsya: leads intake, free seats counter and admin
+After=network-online.target
+
+[Service]
+DynamicUser=yes
+StateDirectory=vremya-leads
+EnvironmentFile=/etc/vremya-leads/env
+ExecStart=/usr/bin/node /opt/vremya-leads/server.mjs
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

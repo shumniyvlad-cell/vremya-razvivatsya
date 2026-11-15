@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Анкеты: Время развиваться</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,700;1,400&family=Wix+Madefor+Text:wght@400..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #E9EEF2; --card: #FFFFFF; --ink: #121417; --muted: #55606A; --line: #D9E1E7;
+  --honey: #F4A27E; --night: #14152B; --err: #9E1F12;
+  --serif: "Noto Serif Display", Georgia, serif;
+  --sans: "Wix Madefor Text", system-ui, -apple-system, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.45 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+button, select { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 24px clamp(14px, 3vw, 40px) 64px; }
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 24px; }
+.head h1 { font: 700 clamp(36px, 5vw, 58px)/1 var(--serif); letter-spacing: -.02em; }
+.head h1 em { font-weight: 400; }
+.head p { color: var(--muted); margin-top: 6px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; font-weight: 700; padding: 11px 18px; border-radius: 99px; border: 1.5px solid var(--ink); background: var(--card); text-decoration: none; }
+.btn-main { background: var(--ink); color: var(--bg); }
+.btn:hover { background: var(--honey); color: var(--ink); }
+.stats { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 14px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px 20px; }
+.card h2 { font: 700 14px/1.2 var(--sans); color: var(--muted); margin-bottom: 14px; }
+.total { background: var(--night); color: #F7EADB; border-color: var(--night); display: flex; flex-direction: column; justify-content: space-between; }
+.total h2 { color: #CFC3D6; }
+.total-num { font: 700 clamp(84px, 9vw, 120px)/.85 var(--serif); color: var(--honey); }
+.total-sub { color: #CFC3D6; margin-top: 12px; }
+.bars { display: grid; gap: 11px; }
+.bar-top { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
+.bar-top b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.bar-track { height: 9px; border-radius: 99px; background: #E3E9EE; overflow: hidden; margin-top: 4px; }
+.bar-fill { height: 100%; border-radius: 99px; background: var(--ink); transition: width .4s; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 26px 0 12px; }
+.tools h2 { font: 700 26px/1.2 var(--serif); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.search, .filter { font: 500 15px/1.2 var(--sans); padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.search { width: min(320px, 100%); }
+.table-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 1240px; }
+th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+th { font: 700 13px/1.2 var(--sans); color: var(--muted); white-space: nowrap; background: #F3F6F8; position: sticky; top: 0; }
+tr:last-child td { border-bottom: 0; }
+td.name { font-weight: 700; min-width: 140px; }
+td.when { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.topic { max-width: 280px; }
+td.tg a { font-weight: 800; text-underline-offset: 3px; }
+td.phone { white-space: nowrap; }
+.pill { display: inline-block; padding: 3px 9px; border-radius: 99px; background: #E3E9EE; font-weight: 600; margin: 0 4px 4px 0; }
+.status { border: 1.5px solid var(--line); border-radius: 99px; padding: 6px 10px; background: #fff; font-weight: 700; }
+.status[data-v="Новая"] { background: var(--honey); border-color: var(--honey); }
+.status[data-v="Резидент"] { background: var(--night); color: #F7EADB; border-color: var(--night); }
+.status[data-v="Отказ"] { color: var(--muted); }
+.del { border: 0; background: none; color: var(--muted); padding: 4px 6px; border-radius: 6px; }
+.del:hover { color: var(--err); background: #FBE3DC; }
+.empty { padding: 44px 20px; text-align: center; color: var(--muted); }
+.empty b { display: block; color: var(--ink); font-size: 18px; margin-bottom: 6px; }
+.note { color: var(--muted); font-size: 13px; margin-top: 12px; }
+.error { background: #FBE3DC; color: var(--err); border-radius: 12px; padding: 12px 14px; font-weight: 600; margin-bottom: 14px; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>Анкеты: <em>Время развиваться</em></h1>
+      <p>Пятницы с 16 до 19. <span id="updated"></span></p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="refresh" type="button">Обновить</button>
+      <a class="btn btn-main" href="/admin/leads.csv">Скачать таблицу</a>
+    </div>
+  </header>
+
+  <p class="error" id="error" hidden></p>
+
+  <section class="stats">
+    <div class="card total">
+      <h2>Всего анкет</h2>
+      <div>
+        <div class="total-num" id="total">0</div>
+        <p class="total-sub" id="total-sub"></p>
+      </div>
+    </div>
+    <div class="card"><h2>Статус</h2><div class="bars" id="by-status"></div></div>
+    <div class="card"><h2>Где сейчас</h2><div class="bars" id="stages"></div></div>
+    <div class="card"><h2>Зачем идут</h2><div class="bars" id="goals"></div></div>
+  </section>
+
+  <div class="tools">
+    <h2>Список</h2>
+    <div class="filters">
+      <select class="filter" id="filter" aria-label="Фильтр по статусу"><option value="">Все статусы</option></select>
+      <input class="search" id="search" type="search" placeholder="Имя, дело или ник" aria-label="Поиск по анкетам">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr><th>Подана</th><th>Имя</th><th>Telegram</th><th>Чем занимается</th><th>Где сейчас</th><th>Зачем идёт</th><th>Задача для разбора</th><th>Телефон</th><th>Статус</th><th></th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden><b>Анкет пока нет</b>Как только кто-то заполнит анкету на сайте, она появится здесь.</div>
+  </div>
+  <p class="note">Страница обновляется раз в 30 секунд. Повторная анкета с тем же ником заменяет прежнюю. Статус «Отказ» и «Убрать» освобождают бесплатное место на сайте.</p>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+let data = { leads: [], total: 0, seats: { total: 10, left: 10 }, statuses: [], stages: [], goals: [], byStatus: [] };
+const fmt = new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+const plural = (n, a, b, c) => { const m = n % 100, k = n % 10; return m > 10 && m < 20 ? c : k === 1 ? a : k >= 2 && k <= 4 ? b : c; };
+
+function bars(target, items) {
+  target.replaceChildren();
+  const max = Math.max(1, ...items.map((i) => i.count));
+  items.forEach((i) => {
+    const row = el("div");
+    const head = el("div", "bar-top");
+    head.append(el("span", "", i.label), el("b", "", String(i.count)));
+    const track = el("div", "bar-track"), fill = el("div", "bar-fill");
+    fill.style.width = (i.count / max) * 100 + "%";
+    track.append(fill);
+    row.append(head, track);
+    target.append(row);
+  });
+}
+
+function render() {
+  $("#total").textContent = data.total;
+  $("#total-sub").textContent = "Бесплатных мест свободно: " + data.seats.left + " из " + data.seats.total;
+  bars($("#by-status"), data.byStatus);
+  bars($("#stages"), data.stages);
+  bars($("#goals"), data.goals);
+  const filter = $("#filter");
+  if (filter.options.length === 1) data.statuses.forEach((s) => filter.append(new Option(s, s)));
+
+  const q = $("#search").value.trim().toLowerCase();
+  const st = filter.value;
+  const list = data.leads.filter((l) => (!st || l.status === st) && (!q || [l.name, l.what, l.telegram, l.phone, l.topic].join(" ").toLowerCase().includes(q)));
+  const rows = $("#rows");
+  rows.replaceChildren();
+  list.forEach((l) => {
+    const tr = el("tr");
+    const tg = el("td", "tg");
+    const a = el("a", "", l.telegram);
+    a.href = "https://t.me/" + l.telegram.replace(/^@/, "");
+    a.target = "_blank"; a.rel = "noopener";
+    tg.append(a);
+    const goals = el("td");
+    l.goals.split(", ").forEach((g) => goals.append(el("span", "pill", g)));
+    const stCell = el("td");
+    const sel = el("select", "status");
+    sel.setAttribute("aria-label", "Статус " + l.name);
+    data.statuses.forEach((s) => sel.append(new Option(s, s, false, s === l.status)));
+    sel.dataset.v = l.status;
+    sel.addEventListener("change", () => setStatus(l, sel));
+    stCell.append(sel);
+    const del = el("td");
+    const btn = el("button", "del", "Убрать");
+    btn.type = "button";
+    btn.addEventListener("click", () => remove(l));
+    del.append(btn);
+    tr.append(el("td", "when", fmt.format(new Date(l.created_at))), el("td", "name", l.name), tg, el("td", "", l.what), el("td", "", l.stage), goals, el("td", "topic", l.topic), el("td", "phone", l.phone), stCell, del);
+    rows.append(tr);
+  });
+  $("#table").hidden = !list.length;
+  const empty = $("#empty");
+  empty.hidden = Boolean(list.length);
+  if (!list.length && data.total) empty.replaceChildren(el("b", "", "Ничего не нашлось"), document.createTextNode("Попробуй другое слово или сбрось фильтр."));
+}
+
+async function load() {
+  try {
+    const res = await fetch(location.origin + "/admin/leads.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    data = await res.json();
+    $("#error").hidden = true;
+    $("#updated").textContent = "Обновлено в " + new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date()) + ".";
+    render();
+  } catch {
+    $("#error").textContent = "Не получилось загрузить анкеты. Проверь интернет и нажми «Обновить».";
+    $("#error").hidden = false;
+  }
+}
+
+async function post(path, body) {
+  const res = await fetch(location.origin + path, { method: "POST", headers: { "Content-Type": "application/json", "X-Admin": "1" }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(res.status);
+}
+async function setStatus(lead, sel) {
+  try { await post("/admin/status", { id: lead.id, status: sel.value }); sel.dataset.v = sel.value; load(); }
+  catch { $("#error").textContent = "Статус не сохранился, попробуй ещё раз."; $("#error").hidden = false; sel.value = lead.status; }
+}
+async function remove(lead) {
+  if (!confirm("Убрать анкету «" + lead.name + "» из списка?")) return;
+  try { await post("/admin/delete", { id: lead.id }); load(); }
+  catch { $("#error").textContent = "Анкета не убралась, попробуй ещё раз."; $("#error").hidden = false; }
+}
+
+$("#search").addEventListener("input", render);
+$("#filter").addEventListener("change", render);
+$("#refresh").addEventListener("click", load);
+load();
+setInterval(() => { if (!document.hidden) load(); }, 30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Время развиваться — встречи предпринимателей в Вологде</title>
+<meta name="description" content="Каждую пятницу с 16 до 19 предприниматели Вологды собираются за одним столом в ресторане: знакомства, разбор задач и инструменты, которые работают. Первая встреча бесплатна для первых десяти.">
+<meta name="theme-color" content="#D8E1E7">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Время развиваться — пятницы в Вологде">
+<meta property="og:description" content="Встреча предпринимателей каждую пятницу с 16 до 19. Первая встреча бесплатна для первых десяти.">
+<meta property="og:image" content="https://shumniyvlad-cell.github.io/vremya-razvivatsya/img/og.jpg">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300..900;1,300..700&family=Wix+Madefor+Text:wght@400..800&display=swap" rel="stylesheet">
+<script>
+/* сборку первого экрана курсорами показываем один раз за визит; ?intro=1 повторяет */
+(function(){try{var q=new URLSearchParams(location.search),m=q.get("motion");var on=m==="1"||(m!=="0"&&localStorage.getItem("motion")==="1");var r=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=q.get("intro")==="1"?null:sessionStorage.getItem("vr-intro");if((!r||on)&&!seen&&!location.hash)document.documentElement.classList.add("assembling")}catch(e){}})();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+
+<!-- небо: четыре цвета вечера, меняются только прозрачностью -->
+<div class="sky" aria-hidden="true">
+  <i class="sky-l sky-day"></i><i class="sky-l sky-sunset"></i><i class="sky-l sky-dusk"></i><i class="sky-l sky-night"></i>
+  <div class="stars" id="stars"></div>
+  <div class="sun"><i class="sun-pale"></i><i class="sun-deep"></i></div>
+</div>
+
+<header class="bar" id="bar">
+  <a class="brand" href="#top" aria-label="Время развиваться, наверх"><em>Время</em> развиваться</a>
+  <div class="bar-right">
+    <div class="clockpill" aria-hidden="true" title="Листай, и вечер идёт">
+      <svg viewBox="0 0 20 20" class="mini"><circle cx="10" cy="10" r="8.5"/><line class="mini-h" x1="10" y1="10" x2="10" y2="5.5"/><line class="mini-m" x1="10" y1="10" x2="10" y2="3.5"/></svg>
+      <span id="vtime">16:00</span>
+    </div>
+    <button class="btn btn-ink btn-sm" type="button" data-open-form>Анкета</button>
+  </div>
+</header>
+
+<main id="main">
+  <!-- 16:00 -->
+  <section class="hero" id="top">
+    <p class="kicker reveal">Вологда, каждую пятницу с&nbsp;16 до&nbsp;19</p>
+    <h1 class="title">
+      <span class="t1 reveal">Время</span>
+      <span class="t2 reveal">развиваться</span>
+    </h1>
+
+    <figure class="portrait reveal" aria-label="Собирает Влад Шумный">
+      <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+        <defs><path id="ringpath" d="M150,150 m-128,0 a128,128 0 1,1 256,0 a128,128 0 1,1 -256,0"/></defs>
+        <text><textPath href="#ringpath" textLength="800" lengthAdjust="spacing">собирает Влад Шумный — запуски на 5 млрд ₽ — собирает Влад Шумный — запуски на 5 млрд ₽ — </textPath></text>
+      </svg>
+      <picture>
+        <source srcset="img/vlad-640.webp 640w, img/vlad-320.webp 320w" sizes="(max-width: 700px) 180px, 260px" type="image/webp">
+        <img src="img/vlad-640.jpg" width="640" height="640" alt="Влад Шумный в прозрачных очках, чёрно-белый портрет">
+      </picture>
+    </figure>
+
+    <div class="hero-grid">
+      <div class="hero-lead reveal">
+        <p class="lead">Встреча предпринимателей в&nbsp;ресторане в&nbsp;центре Вологды. Три часа без суеты: знакомимся, разбираем задачи друг друга и&nbsp;забираем инструменты, которые работают прямо сейчас.</p>
+        <div class="cta-row">
+          <button class="btn btn-ink" type="button" data-open-form>Заполнить анкету</button>
+          <a class="link" href="#vecher">Как проходит вечер</a>
+        </div>
+      </div>
+
+      <article class="tile tile-date reveal tilt" aria-live="polite">
+        <p class="tile-label">Ближайшая встреча</p>
+        <p class="date-day" id="next-day">пятница</p>
+        <p class="date-num" id="next-date">20 ноября</p>
+        <p class="date-time">16:00–19:00</p>
+        <p class="count" id="countdown"><span>до начала</span> <b>—</b></p>
+        <i class="glare" aria-hidden="true"></i>
+      </article>
+
+      <article class="tile tile-table reveal tilt" id="seats">
+        <p class="tile-label">Стол на&nbsp;десять</p>
+        <svg class="table" viewBox="0 0 160 160" aria-hidden="true" id="chairs"></svg>
+        <p class="seats-text" id="seats-text">Первая встреча бесплатна для первых десяти по&nbsp;анкете.</p>
+        <i class="glare" aria-hidden="true"></i>
+      </article>
+    </div>
+
+    <svg class="skyline skyline-day" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><use href="#kremlin"/></svg>
+  </section>
+
+  <!-- кинетическая фраза: слова влетают по прокрутке -->
+  <section class="kinetic" id="kinetic" aria-label="Пока все ждут понедельника, мы растём по пятницам">
+    <div class="kin-sticky">
+      <p class="kin-line" aria-hidden="true">
+        <span class="w">Пока</span> <span class="w">все</span>
+        <span class="w plate plate-ink">ждут понедельника,</span>
+        <span class="w">мы</span> <span class="w plate plate-coral">растём</span>
+        <span class="w">по</span> <span class="w plate plate-wine">пятницам.</span>
+      </p>
+      <span class="stamp" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="stamppath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs><circle cx="60" cy="60" r="58"/><text><textPath href="#stamppath" textLength="270" lengthAdjust="spacing">пятница — 16:00 — 19:00 — </textPath></text><text x="60" y="68" class="stamp-c">пт</text></svg></span>
+    </div>
+  </section>
+
+  <!-- что это -->
+  <section class="block what" aria-labelledby="what-h">
+    <h2 class="h2 reveal" id="what-h">Не нетворкинг с&nbsp;визитками. Стол, за&nbsp;которым каждый двигает другого.</h2>
+    <div class="cards">
+      <article class="card reveal tilt">
+        <span class="card-n">01</span>
+        <h3>Люди</h3>
+        <p>Предприниматели и&nbsp;эксперты Вологды, которые делают своё дело. Состав небольшой, чтобы за&nbsp;вечер успеть поговорить с&nbsp;каждым.</p>
+        <i class="glare" aria-hidden="true"></i>
+      </article>
+      <article class="card reveal tilt">
+        <span class="card-n">02</span>
+        <h3>Задачи</h3>
+        <p>Каждую пятницу один из&nbsp;нас садится на&nbsp;горячий стул: приносит реальную задачу, а&nbsp;стол за&nbsp;час помогает её решить.</p>
+        <i class="glare" aria-hidden="true"></i>
+      </article>
+      <article class="card reveal tilt">
+        <span class="card-n">03</span>
+        <h3>Инструменты</h3>
+        <p>ИИ, продажи, контент, найм. Приносим то, что сами внедрили за&nbsp;неделю, и&nbsp;показываем на&nbsp;живых примерах.</p>
+        <i class="glare" aria-hidden="true"></i>
+      </article>
+    </div>
+  </section>
+
+  <!-- как попасть -->
+  <section class="block path" aria-labelledby="path-h">
+    <h2 class="h2 reveal" id="path-h">Как сесть за&nbsp;стол</h2>
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step-n">1</span>
+        <h3>Анкета</h3>
+        <p>Две минуты. Главное в&nbsp;ней — ник в&nbsp;Telegram: по&nbsp;нему я&nbsp;тебе напишу.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step-n">2</span>
+        <h3>Пишу лично</h3>
+        <p>Знакомимся в&nbsp;личке, добавляю в&nbsp;чат участников. Там адрес ресторана и&nbsp;тема ближайшей пятницы.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step-n">3</span>
+        <h3>Первая встреча</h3>
+        <p>Бесплатно для первых десяти по&nbsp;анкете. Еду и&nbsp;напитки в&nbsp;ресторане каждый заказывает сам.</p>
+      </li>
+      <li class="step reveal">
+        <span class="step-n">4</span>
+        <h3>Резидентство</h3>
+        <p>После первой встречи можно подать заявку. Прошёл отбор — твоё место за&nbsp;столом на&nbsp;каждой пятнице.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- вечер: 16:00 → 19:00 -->
+  <section class="evening" id="vecher" aria-labelledby="vecher-h">
+    <div class="evening-sticky">
+      <h2 class="h2 evening-h" id="vecher-h">Как проходит вечер</h2>
+      <svg class="dial" viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="dial-face" cx="100" cy="100" r="96"/>
+        <path class="dial-arc" d="M 100 100 L 183.14 148 A 96 96 0 0 1 52 183.14 Z"/>
+        <g class="dial-ticks" id="ticks"></g>
+        <g class="dial-nums">
+          <text x="100" y="27">12</text><text x="176" y="105">3</text><text x="100" y="183">6</text><text x="24" y="105">9</text>
+        </g>
+        <g class="hand hand-h" id="hand-h"><line x1="100" y1="108" x2="100" y2="52"/></g>
+        <g class="hand hand-m" id="hand-m"><line x1="100" y1="112" x2="100" y2="22"/></g>
+        <circle class="dial-pin" cx="100" cy="100" r="4.5"/>
+      </svg>
+      <p class="dial-time" id="dial-time">16:00</p>
+    </div>
+
+    <ol class="slots" id="slots">
+      <li class="slot" data-t="0">
+        <time>16:00</time>
+        <h3>Сбор и&nbsp;знакомство</h3>
+        <p>Каждый за&nbsp;минуту: кто ты, чем занимаешься и&nbsp;что сейчас ищешь. Новички представляются первыми.</p>
+      </li>
+      <li class="slot" data-t="30">
+        <time>16:30</time>
+        <h3>Тема вечера</h3>
+        <p>Короткий доклад участника или гостя: продажи, деньги, команда, ИИ. Двадцать минут, дальше вопросы.</p>
+      </li>
+      <li class="slot" data-t="75">
+        <time>17:15</time>
+        <h3>Горячий стул</h3>
+        <p>Один человек приносит реальную задачу. Остальные за&nbsp;45 минут дают решения, контакты и&nbsp;свой опыт.</p>
+      </li>
+      <li class="slot" data-t="120">
+        <time>18:00</time>
+        <h3>Инструмент недели</h3>
+        <p>Показываем, что внедрили сами: нейросеть, скрипт продаж, таблицу, сервис. Уходишь с&nbsp;готовым под свою задачу.</p>
+      </li>
+      <li class="slot" data-t="160">
+        <time>18:40</time>
+        <h3>Договорённости</h3>
+        <p>Кто кому чем поможет до&nbsp;следующей пятницы. Через неделю за&nbsp;столом рассказываем, что получилось.</p>
+      </li>
+      <li class="slot slot-end" data-t="180">
+        <time>19:00</time>
+        <h3>Расходимся с&nbsp;планом на&nbsp;неделю</h3>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 19:00, ночь -->
+  <section class="block night resident" aria-labelledby="res-h">
+    <h2 class="h2 reveal" id="res-h">Резиденты — постоянный состав стола</h2>
+    <div class="res-grid">
+      <p class="res-text reveal">После первой встречи можно подать заявку в&nbsp;резиденты. Смотрю на&nbsp;три вещи: у&nbsp;тебя есть своё дело или ты его запускаешь, ты готов отдавать, а&nbsp;не&nbsp;только брать, и&nbsp;приходишь регулярно.</p>
+      <ul class="perks">
+        <li class="perk reveal tilt"><b>Место на&nbsp;каждой пятнице</b><span>Без записи и&nbsp;очереди за&nbsp;свободным стулом.</span><i class="glare" aria-hidden="true"></i></li>
+        <li class="perk reveal tilt"><b>Закрытый чат резидентов</b><span>Знакомлю с&nbsp;нужными людьми по&nbsp;запросу, а&nbsp;не&nbsp;раз в&nbsp;неделю.</span><i class="glare" aria-hidden="true"></i></li>
+        <li class="perk reveal tilt"><b>Свой горячий стул</b><span>Твою задачу разбирает весь стол, по&nbsp;очереди среди резидентов.</span><i class="glare" aria-hidden="true"></i></li>
+      </ul>
+    </div>
+    <p class="res-note reveal">Условия резидентства расскажу лично после первой встречи.</p>
+  </section>
+
+  <section class="block night host" aria-labelledby="host-h">
+    <div class="host-photo reveal">
+      <picture>
+        <source srcset="img/vlad-640.webp" type="image/webp">
+        <img src="img/vlad-640.jpg" width="640" height="640" alt="Влад Шумный" loading="lazy">
+      </picture>
+    </div>
+    <div class="host-text">
+      <p class="kicker reveal">Кто собирает</p>
+      <h2 class="h2 reveal" id="host-h">Влад Шумный</h2>
+      <p class="reveal">Продюсер и&nbsp;наставник экспертов. Запустил проекты суммарно больше чем на&nbsp;5&nbsp;млрд&nbsp;₽: работал с&nbsp;«Что было дальше?», Дмитрием Портнягиным, командой Леонида Тальписа.</p>
+      <p class="reveal">Переехал в&nbsp;Вологду и&nbsp;собираю здесь сильных людей за&nbsp;одним столом. Каждую пятницу веду вечер сам.</p>
+      <a class="link link-light reveal" href="https://t.me/marchvlvv" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>
+    </div>
+  </section>
+
+  <section class="block night faq" aria-labelledby="faq-h">
+    <h2 class="h2 reveal" id="faq-h">Вопросы</h2>
+    <div class="qa">
+      <details class="reveal"><summary>Сколько стоит?</summary><p>Первая встреча бесплатна для первых десяти по&nbsp;анкете. Еду и&nbsp;напитки в&nbsp;ресторане каждый оплачивает сам. Условия резидентства обсудим после первой встречи.</p></details>
+      <details class="reveal"><summary>Где проходит?</summary><p>В&nbsp;ресторане в&nbsp;центре Вологды. Адрес пришлю в&nbsp;личку и&nbsp;закреплю в&nbsp;чате участников.</p></details>
+      <details class="reveal"><summary>Я&nbsp;только запускаюсь. Мне подходит?</summary><p>Да, если ты уже делаешь, а&nbsp;не&nbsp;только думаешь. За&nbsp;столом полезно видеть людей на&nbsp;шаг впереди.</p></details>
+      <details class="reveal"><summary>Можно прийти с&nbsp;партнёром?</summary><p>Можно, но&nbsp;пусть он тоже заполнит анкету: так я&nbsp;заранее знаю, кто придёт, и&nbsp;смогу познакомить вас с&nbsp;нужными людьми.</p></details>
+      <details class="reveal"><summary>А&nbsp;если пропущу пятницу?</summary><p>Ничего страшного, приходи на&nbsp;следующую. Резидентам важно бывать регулярно, остальным — когда получается.</p></details>
+    </div>
+  </section>
+
+  <section class="final night" aria-labelledby="final-h">
+    <p class="final-time reveal">Пятница, 16:00</p>
+    <h2 class="final-h reveal" id="final-h">Место за&nbsp;столом <em>ждёт</em></h2>
+    <button class="btn btn-sun reveal" type="button" data-open-form>Заполнить анкету</button>
+    <svg class="skyline skyline-night" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><use href="#kremlin"/></svg>
+  </section>
+</main>
+
+<footer class="foot night">
+  <p><em>Время развиваться</em> — встречи предпринимателей в&nbsp;Вологде.</p>
+  <a href="https://t.me/marchvlvv" target="_blank" rel="noopener">@marchvlvv</a>
+</footer>
+
+<!-- анкета: лист снизу по шагам -->
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+  <div class="sheet-grip" id="grip" aria-hidden="true"><i></i></div>
+  <div class="sheet-head">
+    <button class="icon-btn" type="button" id="sheet-back" aria-label="Назад" hidden>
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="sheet-progress" aria-hidden="true"><i id="progress"></i></div>
+    <p class="sheet-step" id="sheet-step">Шаг 1 из&nbsp;3</p>
+    <button class="icon-btn" type="button" id="sheet-close" aria-label="Закрыть анкету">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <form class="sheet-body" id="form" novalidate>
+    <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+    <fieldset class="pane" data-pane="1">
+      <legend id="sheet-title" class="pane-h">Кто ты</legend>
+      <div class="field">
+        <label for="f-name">Как тебя зовут</label>
+        <input id="f-name" name="name" type="text" autocomplete="given-name" maxlength="80" required>
+        <p class="err" id="e-name"></p>
+      </div>
+      <div class="field">
+        <label for="f-tg">Ник в&nbsp;Telegram</label>
+        <div class="tg-wrap"><span aria-hidden="true">@</span><input id="f-tg" name="telegram" type="text" inputmode="text" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="60" aria-describedby="h-tg e-tg" required></div>
+        <p class="hint" id="h-tg">Напишу сюда лично и&nbsp;добавлю в&nbsp;чат участников. Проверь, что личка открыта.</p>
+        <p class="err" id="e-tg"></p>
+      </div>
+      <div class="field">
+        <label for="f-what">Чем занимаешься</label>
+        <input id="f-what" name="what" type="text" maxlength="160" placeholder="Например: кофейня, юрист, мебель" required>
+        <p class="err" id="e-what"></p>
+      </div>
+    </fieldset>
+
+    <fieldset class="pane" data-pane="2" hidden>
+      <legend class="pane-h">Твоё дело</legend>
+      <div class="field" role="radiogroup" aria-labelledby="l-stage" aria-describedby="e-stage">
+        <p class="label" id="l-stage">Где ты сейчас</p>
+        <div class="options" id="stages"></div>
+        <p class="err" id="e-stage"></p>
+      </div>
+      <div class="field" role="group" aria-labelledby="l-goals" aria-describedby="e-goals">
+        <p class="label" id="l-goals">Зачем идёшь <span>можно несколько</span></p>
+        <div class="chips" id="goals"></div>
+        <p class="err" id="e-goals"></p>
+      </div>
+    </fieldset>
+
+    <fieldset class="pane" data-pane="3" hidden>
+      <legend class="pane-h">Последнее</legend>
+      <div class="field">
+        <label for="f-topic">Какую задачу хочешь разобрать за&nbsp;столом <span>необязательно</span></label>
+        <textarea id="f-topic" name="topic" rows="4" maxlength="500" placeholder="Например: не&nbsp;могу найти менеджера по&nbsp;продажам"></textarea>
+      </div>
+      <div class="field">
+        <label for="f-phone">Телефон <span>необязательно, если Telegram не&nbsp;ответит</span></label>
+        <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30">
+      </div>
+      <p class="form-err" id="form-err" role="alert" hidden></p>
+    </fieldset>
+
+    <div class="pane pane-done" data-pane="done" hidden tabindex="-1" id="done">
+      <svg class="done-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/><path d="M19 33l9 9 17-19"/></svg>
+      <h3 class="pane-h" id="done-h">Ты в&nbsp;списке</h3>
+      <p id="done-text">Напишу тебе в&nbsp;Telegram в&nbsp;течение дня.</p>
+      <a class="btn btn-ink" href="https://t.me/marchvlvv" target="_blank" rel="noopener">Написать Владу первым</a>
+      <button class="link" type="button" id="done-close">Вернуться на&nbsp;сайт</button>
+    </div>
+
+    <div class="sheet-foot" id="sheet-foot">
+      <button class="btn btn-ink btn-wide" type="submit" id="next">Дальше</button>
+    </div>
+  </form>
+</div>
+
+<!-- силуэт Вологодского кремля: Софийский собор и колокольня -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="kremlin" viewBox="0 0 1440 220"><rect x="0.0" y="200.0" width="1440.0" height="20.0"/><path d="M0 200 V174 L35.0 158 L70 174 V200 Z"/><path d="M76 200 V166 L103.0 148 L130 166 V200 Z"/><path d="M136 200 V178 L176.0 164 L216 178 V200 Z"/><path d="M222 200 V160 L245.0 140 L268 160 V200 Z"/><path d="M274 200 V172 L306.0 156 L338 172 V200 Z"/><path d="M344 200 V170 L389.0 158 L434 170 V200 Z"/><circle cx="470" cy="178.4" r="24"/><rect x="468.0" y="176.0" width="4.0" height="24.0"/><circle cx="505" cy="173.0" r="30"/><rect x="503.0" y="170.0" width="4.0" height="30.0"/><circle cx="1270" cy="176.6" r="26"/><rect x="1268.0" y="174.0" width="4.0" height="26.0"/><circle cx="1310" cy="182.0" r="20"/><rect x="1308.0" y="180.0" width="4.0" height="20.0"/><rect x="560.0" y="120.0" width="210.0" height="80.0"/><path d="M556 120 H774 L762 108 H568 Z"/><rect x="588.1" y="90.0" width="19.8" height="18.0"/><path d="M585.0 90.0 C585.0 75.7 593.3 69.2 598.0 64.0 C602.7 69.2 611.0 75.7 611.0 90.0 Z"/><rect x="597.0" y="52.0" width="2.0" height="12.0"/><rect x="593.5" y="55.0" width="9.0" height="2.0"/><rect x="722.1" y="90.0" width="19.8" height="18.0"/><path d="M719.0 90.0 C719.0 75.7 727.3 69.2 732.0 64.0 C736.7 69.2 745.0 75.7 745.0 90.0 Z"/><rect x="731.0" y="52.0" width="2.0" height="12.0"/><rect x="727.5" y="55.0" width="9.0" height="2.0"/><rect x="623.4" y="82.0" width="21.3" height="26.0"/><path d="M620.0 82.0 C620.0 66.6 629.0 59.6 634.0 54.0 C639.0 59.6 648.0 66.6 648.0 82.0 Z"/><rect x="633.0" y="42.0" width="2.0" height="12.0"/><rect x="629.5" y="45.0" width="9.0" height="2.0"/><rect x="685.4" y="82.0" width="21.3" height="26.0"/><path d="M682.0 82.0 C682.0 66.6 691.0 59.6 696.0 54.0 C701.0 59.6 710.0 66.6 710.0 82.0 Z"/><rect x="695.0" y="42.0" width="2.0" height="12.0"/><rect x="691.5" y="45.0" width="9.0" height="2.0"/><rect x="649.8" y="76.0" width="30.4" height="32.0"/><path d="M645.0 76.0 C645.0 54.0 657.8 44.0 665.0 36.0 C672.2 44.0 685.0 54.0 685.0 76.0 Z"/><rect x="664.0" y="24.0" width="2.0" height="12.0"/><rect x="660.5" y="27.0" width="9.0" height="2.0"/><rect x="800.0" y="138.0" width="80.0" height="62.0"/><rect x="797.0" y="135.0" width="86.0" height="3.0"/><rect x="808.0" y="102.0" width="64.0" height="36.0"/><rect x="805.0" y="99.0" width="70.0" height="3.0"/><rect x="814.0" y="72.0" width="52.0" height="30.0"/><rect x="811.0" y="69.0" width="58.0" height="3.0"/><rect x="819.0" y="50.0" width="42.0" height="22.0"/><rect x="816.0" y="47.0" width="48.0" height="3.0"/><path d="M827.8 47.0 C816.4 36.5 821.0 28.4 840.0 17.0 C859.0 28.4 863.6 36.5 852.2 47.0 Z"/><rect x="838.5" y="2.0" width="3.0" height="16.0"/><rect x="834.0" y="8.0" width="12.0" height="2.5"/><path d="M900 200 V170 L930.0 156 L960 170 V200 Z"/><path d="M968 200 V176 L1010.0 160 L1052 176 V200 Z"/><path d="M1060 200 V164 L1086.0 146 L1112 164 V200 Z"/><path d="M1120 200 V172 L1155.0 160 L1190 172 V200 Z"/><path d="M1198 200 V178 L1246.0 164 L1294 178 V200 Z"/><path d="M1302 200 V160 L1331.0 140 L1360 160 V200 Z"/><path d="M1368 200 V170 L1406.0 154 L1444 170 V200 Z"/><path d="M1452 200 V174 L1484.0 160 L1516 174 V200 Z"/><circle cx="1385" cy="180.2" r="22"/><rect x="1383.0" y="178.0" width="4.0" height="22.0"/><circle cx="1420" cy="174.8" r="28"/><rect x="1418.0" y="172.0" width="4.0" height="28.0"/></symbol>
+</svg>
+
+<script src="main.js" defer></script>
+</body>
+</html>

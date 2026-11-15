@@ -1,0 +1,6 @@
+.DS_Store
+.env
+ACCESS.txt
+*.db
+*.db-*
+img/og-base.png
