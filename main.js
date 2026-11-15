@@ -3,7 +3,9 @@
   "use strict";
 
   const CONFIG = {
-    api: /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8916" : "https://vremya.83-141-94-106.sslip.io",
+    // на marchvlv.ru анкеты идут через тот же домен (/vremya/api → сервис на «Часе»)
+    api: /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8916"
+      : /(^|\.)marchvlv\.ru$/.test(location.hostname) ? location.origin + "/vremya" : "https://vremya.83-141-94-106.sslip.io",
     telegram: "https://t.me/marchvlvv",
     // дата первой встречи; если пусто или прошла — ближайшая пятница
     firstMeeting: "2026-11-20",
