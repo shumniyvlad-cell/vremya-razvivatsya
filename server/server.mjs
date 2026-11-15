@@ -48,7 +48,7 @@ const upsert = db.prepare(`
   VALUES (@now, @now, @name, @telegram, @tg_key, @what, @stage, @goals, @topic, @phone, 0)
   ON CONFLICT(tg_key) DO UPDATE SET
     updated_at = @now, name = @name, telegram = @telegram, what = @what, stage = @stage,
-    goals = @goals, topic = @topic, phone = @phone, deleted = 0
+    goals = @goals, topic = @topic, phone = @phone
 `);
 const listLeads = db.prepare("SELECT * FROM leads WHERE deleted = 0 ORDER BY created_at DESC");
 const countAll = db.prepare("SELECT COUNT(*) AS n FROM leads");
@@ -72,7 +72,11 @@ setInterval(() => {
   for (const [k, arr] of hits) if (!arr.some((t) => now - t < 3600e3)) hits.delete(k);
 }, 600e3).unref();
 
-const clientIp = (req) => String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+// сервис слушает только 127.0.0.1, перед ним Caddy: он дописывает настоящий адрес последним в X-Forwarded-For
+const clientIp = (req) => {
+  const xff = String(req.headers["x-forwarded-for"] || "").split(",").map((s) => s.trim()).filter(Boolean);
+  return xff.length ? xff[xff.length - 1] : String(req.socket.remoteAddress || "");
+};
 
 function send(res, status, body, headers = {}) {
   const isObj = typeof body === "object" && !Buffer.isBuffer(body);
@@ -202,7 +206,7 @@ const server = http.createServer(async (req, res) => {
       if (req.method === "OPTIONS") return send(res, 204, "", cors);
       if (req.method !== "POST") return send(res, 405, { error: "method" }, cors);
       // порог с запасом: за одним адресом мобильного оператора сидит много людей
-      if (limited("lead:" + ip, 30, 600e3)) return send(res, 429, { error: "rate" }, cors);
+      if (limited("lead:" + ip, 12, 600e3)) return send(res, 429, { error: "rate" }, cors);
       let body;
       try { body = await readJson(req); } catch { return send(res, 400, { error: "body" }, cors); }
       if (body.company) return send(res, 200, { ok: true, seats: seats() }, cors); // приманка для ботов
@@ -218,7 +222,7 @@ const server = http.createServer(async (req, res) => {
     if (path === "/admin" || path.startsWith("/admin/")) {
       if (limited("auth:" + ip, 200, 600e3)) return send(res, 429, "Слишком много запросов, подожди 10 минут.");
       if (!isAdmin(req)) {
-        if (req.headers.authorization && limited("authfail:" + ip, 10, 600e3)) return send(res, 429, "Слишком много попыток, подожди 10 минут.");
+        if (req.headers.authorization && (limited("authfail:" + ip, 10, 600e3) || limited("authfail:all", 60, 600e3))) return send(res, 429, "Слишком много попыток, подожди 10 минут.");
         return send(res, 401, "Нужен пароль.", { "WWW-Authenticate": 'Basic realm="Vremya", charset="UTF-8"' });
       }
       if (path === "/admin" && req.method === "GET") {
