@@ -27,7 +27,7 @@
 :root[data-dark] { --fg: var(--cream); --fg-2: var(--cream-2); }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 84px; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 84px; overflow-x: clip; }
 body {
   background: var(--sky);
   color: var(--fg);
