@@ -6,7 +6,7 @@
     api: /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? "http://localhost:8916" : "https://vremya.83-141-94-106.sslip.io",
     telegram: "https://t.me/marchvlvv",
     // дата первой встречи; если пусто или прошла — ближайшая пятница
-    firstMeeting: "",
+    firstMeeting: "2026-11-20",
     freeSeats: 10,
   };
   const STAGES = ["Запускаю дело", "Есть бизнес, до 1 млн в месяц", "Бизнес от 1 до 5 млн в месяц", "Бизнес больше 5 млн в месяц", "Эксперт или специалист"];
@@ -271,22 +271,21 @@
   const chairsSvg = $("#chairs"), seatsText = $("#seats-text");
   const ns = "http://www.w3.org/2000/svg";
   const chairEls = [];
+  const dishEls = [];
   (function drawTable() {
-    const cloth = document.createElementNS(ns, "circle");
-    cloth.setAttribute("cx", 80); cloth.setAttribute("cy", 80); cloth.setAttribute("r", 42); cloth.setAttribute("class", "t-cloth");
-    const top = document.createElementNS(ns, "circle");
-    top.setAttribute("cx", 80); top.setAttribute("cy", 80); top.setAttribute("r", 42); top.setAttribute("class", "t-top");
-    chairsSvg.append(cloth, top);
-    for (let i = 0; i < CONFIG.freeSeats; i++) {
-      const g = document.createElementNS(ns, "g");
-      g.setAttribute("transform", `rotate(${i * (360 / CONFIG.freeSeats)} 80 80)`);
-      const r = document.createElementNS(ns, "rect");
-      r.setAttribute("x", 70); r.setAttribute("y", 8); r.setAttribute("width", 20); r.setAttribute("height", 16); r.setAttribute("rx", 5);
-      r.setAttribute("class", "chair");
-      g.append(r);
-      chairsSvg.append(g);
-      chairEls.push(r);
-    }
+    // вид сверху: длинный стол, по пять стульев с каждой стороны, у каждого тарелка
+    const el = (tag, attrs) => { const n = document.createElementNS(ns, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+    chairsSvg.append(el("rect", { x: 22, y: 34, width: 176, height: 44, rx: 10, class: "t-board" }));
+    const xs = [42, 76, 110, 144, 178];
+    // порядок рассадки: сверху и снизу по очереди, слева направо
+    xs.forEach((x) => {
+      [[8, 45], [88, 67]].forEach(([cy, dy]) => {
+        const c = el("rect", { x: x - 11, y: cy, width: 22, height: 16, rx: 5, class: "chair" });
+        const d = el("circle", { cx: x, cy: dy, r: 7, class: "dish" });
+        chairsSvg.append(c, d);
+        chairEls.push(c); dishEls.push(d);
+      });
+    });
   })();
   let seatsKnown = null;
   function renderSeats(raw, pop) {
@@ -297,10 +296,13 @@
       const was = c.classList.contains("is-taken");
       const now = i < s.taken;
       c.classList.toggle("is-taken", now);
+      dishEls[i].classList.toggle("is-taken", now);
       if (pop && now && !was && motion) { c.classList.remove("is-pop"); void c.getBBox(); c.classList.add("is-pop"); }
     });
+    $("#seats-num").textContent = String(s.left);
+    $("#seats-of").innerHTML = s.left > 0 ? `${plural(s.left, "место", "места", "мест")}<br>свободно из\u00a0${s.total}` : "мест<br>свободно";
     seatsText.innerHTML = s.left > 0
-      ? `Первая встреча бесплатна для первых десяти. Свободно <b>${s.left} из ${s.total}</b> ${plural(s.left, "место", "места", "мест")}.`
+      ? "Первая встреча бесплатна для первых десяти по\u00a0анкете. Занятые стулья закрашены."
       : "Бесплатные места разобраны. Анкета открыта: напишу, когда освободится стул.";
     $("#seats").setAttribute("aria-label", s.left > 0 ? `Свободно ${s.left} из ${s.total} бесплатных мест` : "Бесплатные места разобраны");
   }
@@ -317,6 +319,7 @@
       // нет связи с сервером: показываем правило без цифр
       chairsSvg.classList.remove("is-loading");
       seatsText.innerHTML = "Первая встреча бесплатна для первых десяти по&nbsp;анкете.";
+      $("#seats-of").innerHTML = "бесплатных<br>мест";
     }
   }
   loadSeats();

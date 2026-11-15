@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Время развиваться — встречи предпринимателей в Вологде</title>
-<meta name="description" content="Каждую пятницу с 16 до 19 предприниматели Вологды собираются за одним столом в ресторане: знакомства, разбор задач и инструменты, которые работают. Первая встреча бесплатна для первых десяти.">
+<meta name="description" content="Каждую пятницу с 16 до 19 предприниматели Вологды собираются за одним столом: знакомства, разбор задач и инструменты, которые работают. Первая встреча бесплатна для первых десяти.">
 <meta name="theme-color" content="#D8E1E7">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Время развиваться — пятницы в Вологде">
@@ -13,7 +13,7 @@
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300..900;1,300..700&family=Wix+Madefor+Text:wght@400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400..800&family=Wix+Madefor+Text:wght@400..800&display=swap" rel="stylesheet">
 <script>
 /* сборку первого экрана курсорами показываем один раз за визит; ?intro=1 повторяет */
 (function(){try{var q=new URLSearchParams(location.search),m=q.get("motion");var on=m==="1"||(m!=="0"&&localStorage.getItem("motion")==="1");var r=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=q.get("intro")==="1"?null:sessionStorage.getItem("vr-intro");if((!r||on)&&!seen&&!location.hash)document.documentElement.classList.add("assembling")}catch(e){}})();
@@ -63,7 +63,7 @@
 
     <div class="hero-grid">
       <div class="hero-lead reveal">
-        <p class="lead">Встреча предпринимателей в&nbsp;ресторане в&nbsp;центре Вологды. Три часа без суеты: знакомимся, разбираем задачи друг друга и&nbsp;забираем инструменты, которые работают прямо сейчас.</p>
+        <p class="lead">Встреча предпринимателей Вологды за одним столом. Три часа без суеты: знакомимся, разбираем задачи друг друга и&nbsp;забираем инструменты, которые работают прямо сейчас.</p>
         <div class="cta-row">
           <button class="btn btn-ink" type="button" data-open-form>Заполнить анкету</button>
           <a class="link" href="#vecher">Как проходит вечер</a>
@@ -81,7 +81,8 @@
 
       <article class="tile tile-table reveal tilt" id="seats">
         <p class="tile-label">Стол на&nbsp;десять</p>
-        <svg class="table" viewBox="0 0 160 160" aria-hidden="true" id="chairs"></svg>
+        <div class="seats-head"><span class="seats-num" id="seats-num">10</span><span class="seats-of" id="seats-of">мест<br>свободно</span></div>
+        <svg class="table" viewBox="0 0 220 112" aria-hidden="true" id="chairs"></svg>
         <p class="seats-text" id="seats-text">Первая встреча бесплатна для первых десяти по&nbsp;анкете.</p>
         <i class="glare" aria-hidden="true"></i>
       </article>
@@ -140,12 +141,12 @@
       <li class="step reveal">
         <span class="step-n">2</span>
         <h3>Пишу лично</h3>
-        <p>Знакомимся в&nbsp;личке, добавляю в&nbsp;чат участников. Там адрес ресторана и&nbsp;тема ближайшей пятницы.</p>
+        <p>Знакомимся в&nbsp;личке, добавляю в&nbsp;чат участников. Там место встречи и тема ближайшей пятницы.</p>
       </li>
       <li class="step reveal">
         <span class="step-n">3</span>
         <h3>Первая встреча</h3>
-        <p>Бесплатно для первых десяти по&nbsp;анкете. Еду и&nbsp;напитки в&nbsp;ресторане каждый заказывает сам.</p>
+        <p>Бесплатно для первых десяти по анкете. Место пришлю в личку накануне.</p>
       </li>
       <li class="step reveal">
         <span class="step-n">4</span>
@@ -239,8 +240,8 @@
   <section class="block night faq" aria-labelledby="faq-h">
     <h2 class="h2 reveal" id="faq-h">Вопросы</h2>
     <div class="qa">
-      <details class="reveal"><summary>Сколько стоит?</summary><p>Первая встреча бесплатна для первых десяти по&nbsp;анкете. Еду и&nbsp;напитки в&nbsp;ресторане каждый оплачивает сам. Условия резидентства обсудим после первой встречи.</p></details>
-      <details class="reveal"><summary>Где проходит?</summary><p>В&nbsp;ресторане в&nbsp;центре Вологды. Адрес пришлю в&nbsp;личку и&nbsp;закреплю в&nbsp;чате участников.</p></details>
+      <details class="reveal"><summary>Сколько стоит?</summary><p>Первая встреча бесплатна для первых десяти по&nbsp;анкете. Условия резидентства обсудим после первой встречи.</p></details>
+      <details class="reveal"><summary>Где проходит?</summary><p>В Вологде. Точное место пришлю в личку и закреплю в чате участников.</p></details>
       <details class="reveal"><summary>Я&nbsp;только запускаюсь. Мне подходит?</summary><p>Да, если ты уже делаешь, а&nbsp;не&nbsp;только думаешь. За&nbsp;столом полезно видеть людей на&nbsp;шаг впереди.</p></details>
       <details class="reveal"><summary>Можно прийти с&nbsp;партнёром?</summary><p>Можно, но&nbsp;пусть он тоже заполнит анкету: так я&nbsp;заранее знаю, кто придёт, и&nbsp;смогу познакомить вас с&nbsp;нужными людьми.</p></details>
       <details class="reveal"><summary>А&nbsp;если пропущу пятницу?</summary><p>Ничего страшного, приходи на&nbsp;следующую. Резидентам важно бывать регулярно, остальным — когда получается.</p></details>
